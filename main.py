@@ -2,6 +2,14 @@ from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
 from time import sleep
 
+"""
+author =  AdrianoAngioletto
+
+Description =  separei em metodos, o scraping, para que fique legivel cada tópico.
+
+
+"""
+
 
 class Desafio:
 
@@ -38,7 +46,10 @@ class Desafio:
         
      
 
-    def IniciaElementos(self):
+    def IniciaProdutos(self):
+            
+        # função responsavel por iniciar o site, pegar os elementos relacionado a Produtos e converter o 
+        # objeto no tipo de dado necessario.
         
         print(' Estamos, Carregando o site por favor aguarde')
         
@@ -58,13 +69,34 @@ class Desafio:
         
         self.produto1_categoria = produto1_categoria.text #PRODUTO 1 CATEGORIA EM STRING
         
+        descricao_geral_dos_produtos = self.EncontraElementos('/html/body/div/section/div/div[3]') # OBJETO DIV, ONDE FICA DESCRICAO DOS PRODUTOS
         
+        self.descricao = descricao_geral_dos_produtos.text # DESCRIÇÃO GERAL EM TEXTO
         
-        print(self.produto1_marca)
+        self.descricao_edit = self.descricao.replace("Description", "") # Aqui só removi a palavra Description pq não é necessaria.
+        
+       
+
+        def IniciaPropriedadesProduto(self):
+                
+                
+                
+                # funcão responsavel por pegar Propriedades como manda o PDF.
+                
+                
+                
+                
+        
+                
+                ...
+                
+                
+                
+                
         
     
 desafio = Desafio()
 
-desafio.IniciaElementos()
+desafio.IniciaProdutos()
         
         
