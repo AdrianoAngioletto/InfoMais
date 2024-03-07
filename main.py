@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import pyautogui
 import json
+import os
+import unicodedata
 
 
 """
@@ -28,7 +30,7 @@ class Desafio:
                 |             DESAFIO WEB SCRAPING                                          |
                 |                                                                           |
                 |                                                                           |
-                |          INFO SIMPLES   https://infosimples.com/                          |
+                |          INFOS SIMPLES   https://infosimples.com/                         |
                 |                                                                           |
                 |                                                                           |    
                 |                                                                           |
@@ -46,8 +48,20 @@ class Desafio:
                 
             
             return elemento
+    
+    
+    def limpar_descricao(self, descricao):
+        #funcao responsavel por arrumar texto
         
-     
+        
+        descricao_sem_quebras = descricao.replace('\n', ' ').replace('\r', '')
+        
+        # Normaliza os caracteres especiais
+        descricao_normalizada = unicodedata.normalize('NFKD', descricao_sem_quebras).encode('ASCII', 'ignore').decode('utf-8')
+
+        return descricao_normalizada
+
+        
 
     def IniciaProdutos(self)-> None:
             
@@ -87,6 +101,8 @@ class Desafio:
         self.descricao = descricao_geral_dos_produtos.text # DESCRIÇÃO GERAL EM TEXTO
         
         self.descricao_edit = self.descricao.replace("Description", "") # Aqui só removi a palavra Description pq não é necessaria.
+        
+        self.descricao_edit = self.limpar_descricao(self.descricao_edit)# chamei metodo pra corrigir o texto
         
         valor_produto_1_atual = self.EncontraElementos('/html/body/div/section/div/div[2]/div[1]/div[1]/div[3]/div[2]') # PEGANDO OBJETO
         
@@ -128,6 +144,9 @@ class Desafio:
         if 'Storage temperature 0 0 25ºC' in self.texto_tabela_adicionais:
                 # AQUI PARA ADICIONAR DE VOLTA O - QUE FOI RETIRADO NO PRIMEIRO IF
                 self.texto_tabela_adicionais = self.texto_tabela_adicionais.replace('Storage temperature 0 0 25ºC', 'Storage temperature 0 - 25ºC')
+                
+                self.texto_tabela = self.limpar_descricao(self.texto_tabela)
+                self.texto_tabela_adicionais = self.limpar_descricao(self.texto_tabela_adicionais)
 
     def calcular_media_avaliacoes(*avaliacoes)-> float:
         
@@ -214,10 +233,33 @@ class Desafio:
             media_avaliacoes = self.calcular_media_avaliacoes(self.avaliacao1, self.avaliacao2, self.avaliacao3)
             
             url_pagina = 'https://infosimples.com/vagas/desafio/commercia/product.html'
-    
-    def ConverteJson(self):
             
-        # funcao responsavel por salvar os arquivos json.
+
+    def CriaPasta(self)-> object:
+            
+         # função responsavel por criar pasta para salvar o json
+            
+        caminho = os.getcwd()
+        
+        caminho_pasta = os.path.join(caminho, 'Arquivos_Json')
+        
+        if not os.path.exists(caminho_pasta):
+                
+                print('criando pasta, para json')
+        
+                os.makedirs(caminho_pasta)
+                
+        else:
+                print('pasta ja criada')
+        
+        return caminho_pasta
+                
+            
+            
+    
+    def ConverteJson(self)-> None:
+            
+        # funcao responsavel, por salvar os arquivos no json
             
         json_produtos = {
             'produto1Texto': self.produto1Texto,
@@ -235,11 +277,17 @@ class Desafio:
         
         json_data = json.dumps(json_produtos, indent=2)
 
-
-        print(json_data)
-            
- 
+        retorno_caminho = self.CriaPasta()
         
+        caminho_arquivo_json = os.path.join(retorno_caminho, 'Dados.json')
+
+        with open(caminho_arquivo_json, 'w') as arquivo:
+            arquivo.write(json_data)
+
+        print(f'JSON salvo em {caminho_arquivo_json}')
+        
+        
+
                         
     
 desafio = Desafio()
